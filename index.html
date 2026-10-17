@@ -1,24 +1,230 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=./dream-pool/">
-  <title>无人泳池 · THE POOL REMEMBERS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07110f">
+  <meta name="description" content="Dennis 的 AI 作品仓库：网页、实验、视觉与各种小东西。">
+  <title>Dennis / AI Work</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307110f'/%3E%3Cpath d='M18 44 32 16l14 28z' fill='none' stroke='%23b44743' stroke-width='2'/%3E%3C/svg%3E">
   <style>
-    html,body{height:100%;margin:0;background:#07110f;color:#efeee2;display:grid;place-items:center;font-family:Georgia,"Songti SC","SimSun",serif}
-    a{color:#b9d4c7;letter-spacing:.14em;text-decoration:none;border-bottom:1px solid rgba(185,212,199,.35);padding-bottom:5px}
-    .wrap{text-align:center;line-height:2.2}
-    .en{font-family:Consolas,monospace;font-size:10px;letter-spacing:.4em;color:rgba(239,238,226,.35)}
-    .cn{font-size:clamp(30px,6vw,64px);letter-spacing:.16em;margin:16px 0 28px}
+    :root {
+      --paper: #efeee2;
+      --dim: rgba(239, 238, 226, .46);
+      --faint: rgba(239, 238, 226, .22);
+      --line: rgba(239, 238, 226, .14);
+      --red: #b44743;
+      --teal: #8cc8b8;
+      --serif: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+      --sans: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+      --mono: "Cascadia Mono", "SFMono-Regular", "Consolas", monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      background: #07110f;
+      color: var(--paper);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(55% 50% at 18% 0%, rgba(129, 174, 153, .12), transparent 70%),
+        radial-gradient(50% 45% at 100% 100%, rgba(180, 71, 67, .08), transparent 70%),
+        linear-gradient(180deg, #0a1713, #050c0a 82%);
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .055;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: -1;
+    }
+    .shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      width: min(1160px, calc(100% - 64px));
+      margin: 0 auto;
+      padding: 34px 0 30px;
+    }
+    header, footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .22em;
+      color: var(--faint);
+    }
+    header .mark { display: flex; gap: 11px; align-items: center; color: var(--dim); }
+    header .mark::before {
+      content: "";
+      width: 7px; height: 7px;
+      border: 1px solid var(--red);
+      transform: rotate(45deg);
+    }
+    header .version { color: rgba(140, 200, 184, .45); }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 0 70px;
+    }
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .36em;
+      color: var(--dim);
+    }
+    .kicker::before { content: ""; width: 36px; height: 1px; background: var(--red); }
+    h1 {
+      max-width: 900px;
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(48px, 8.4vw, 112px);
+      line-height: 1.08;
+      letter-spacing: .04em;
+    }
+    h1 .dot { color: var(--red); }
+    .intro {
+      max-width: 470px;
+      margin-top: 30px;
+      font-family: var(--serif);
+      font-size: 14px;
+      line-height: 2.1;
+      letter-spacing: .12em;
+      color: var(--dim);
+    }
+    .works {
+      margin-top: 62px;
+      border-top: 1px solid var(--line);
+      max-width: 900px;
+    }
+    .work {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1.3fr) minmax(150px, .7fr) 28px;
+      gap: 18px;
+      align-items: center;
+      min-height: 94px;
+      padding: 17px 4px;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      color: inherit;
+      transition: background .4s ease, padding .4s ease;
+    }
+    .work:hover { background: rgba(239, 238, 226, .025); padding-left: 14px; padding-right: 10px; }
+    .work .idx {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .18em;
+      color: var(--red);
+    }
+    .work .title {
+      font-family: var(--serif);
+      font-size: clamp(22px, 2.5vw, 32px);
+      letter-spacing: .16em;
+      color: var(--paper);
+    }
+    .work .type {
+      font-family: var(--mono);
+      font-size: 8px;
+      line-height: 1.8;
+      letter-spacing: .16em;
+      color: var(--faint);
+    }
+    .work .type b { display: block; font-weight: 400; color: var(--dim); }
+    .work .arrow {
+      justify-self: end;
+      font-family: var(--mono);
+      font-size: 16px;
+      color: var(--faint);
+      transition: color .35s ease, transform .35s ease;
+    }
+    .work:hover .arrow { color: var(--teal); transform: translate(2px, -2px); }
+    .soon {
+      display: flex;
+      justify-content: space-between;
+      padding: 23px 4px 0;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .2em;
+      color: rgba(239, 238, 226, .19);
+    }
+    footer {
+      gap: 20px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(239, 238, 226, .07);
+    }
+    footer .right { color: rgba(180, 71, 67, .48); }
+    @media (max-width: 680px) {
+      .shell { width: calc(100% - 36px); padding-top: 22px; }
+      main { padding: 64px 0 50px; }
+      header { font-size: 7px; letter-spacing: .13em; }
+      header .version { display: none; }
+      .intro { font-size: 12px; margin-top: 23px; }
+      .works { margin-top: 44px; }
+      .work {
+        grid-template-columns: 34px 1fr 20px;
+        gap: 11px;
+        min-height: 79px;
+      }
+      .work .type { display: none; }
+      .work .title { font-size: 22px; }
+      .work .idx { font-size: 7px; }
+      .work .arrow { font-size: 13px; }
+      .soon { font-size: 7px; }
+      footer { font-size: 7px; letter-spacing: .12em; }
+    }
   </style>
-  <script>location.replace('./dream-pool/');</script>
 </head>
 <body>
-  <div class="wrap">
-    <div class="en">THE POOL REMEMBERS</div>
-    <div class="cn">无人泳池</div>
-    <a href="./dream-pool/">如果没有自动进入，请点这里</a>
+  <div class="shell">
+    <header>
+      <div class="mark">DENNIS / AI WORK</div>
+      <div class="version">COLLECTION VOL. 01</div>
+    </header>
+
+    <main>
+      <div class="kicker">THINGS MADE WITH MACHINES</div>
+      <h1>AI 做的东西<span class="dot">.</span></h1>
+      <p class="intro">
+        这里存放一些由 AI 参与完成的网页、实验、视觉与各种小东西。<br>
+        把愿望说出来，然后看它长出什么形状。
+      </p>
+
+      <nav class="works" aria-label="作品列表">
+        <a class="work" href="./dream-pool/">
+          <span class="idx">001</span>
+          <span class="title">无人泳池</span>
+          <span class="type"><b>INTERACTIVE WEB</b>梦核 / 第一人称探索</span>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+        <div class="soon">
+          <span>更多作品正在被许愿</span>
+          <span>TO BE CONTINUED</span>
+        </div>
+      </nav>
+    </main>
+
+    <footer>
+      <span>© 2026 DENNIS / BUILT WITH AI</span>
+      <span class="right">NO EXIT / ONLY MORE ROOMS</span>
+    </footer>
   </div>
 </body>
 </html>
