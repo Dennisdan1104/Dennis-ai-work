@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#07110f">
+<meta name="description" content="一座没有人的室内泳池。一个可以探索的梦核阈限空间。建议佩戴耳机。">
+<title>无人泳池 · THE POOL REMEMBERS</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307110f'/%3E%3Crect x='17' y='17' width='30' height='30' fill='%23b44743'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<noscript>
+  <div style="position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#07110f;color:#e9e8db;font-family:serif;line-height:2;text-align:center;padding:24px">
+    这座泳池需要 JavaScript 才能呼吸。<br>请在浏览器中启用 JavaScript 后重新进入。
+  </div>
+</noscript>
+
+<div id="stage">
+  <canvas id="view" aria-label="一座无人的室内泳池。拖动环顾，使用 WASD 移动。"></canvas>
+  <div class="grade" aria-hidden="true"></div>
+  <div class="haze" aria-hidden="true"></div>
+  <div class="condensation" aria-hidden="true"></div>
+  <div class="water-overlay" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="glitch-bars" id="glitch-bars" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div id="flash" aria-hidden="true"></div>
+</div>
+
+<!-- ===================== HUD ===================== -->
+<div class="hud" id="hud" aria-live="off">
+  <div class="brand">
+    <span class="brand-cn">无 人 泳 池</span>
+    <span class="brand-en">THE POOL REMEMBERS</span>
+  </div>
+
+  <div class="meta">
+    <span class="rec-dot" aria-hidden="true"></span>
+    <span id="clock">03:17</span>
+    <span class="slash">/</span>
+    <span>SUBLEVEL −1</span>
+    <button class="sound" id="sound-button" type="button" aria-label="开启声音" title="声音 (M)">声</button>
+  </div>
+
+  <div class="memory" aria-label="记忆收集进度">
+    <span>记忆</span>
+    <b id="memory-count">0</b><span>/4</span>
+    <span class="memory-dots" aria-hidden="true">
+      <i data-memory="0"></i><i data-memory="1"></i><i data-memory="2"></i><i data-memory="3"></i>
+    </span>
+  </div>
+
+  <div class="objective">
+    <span class="obj-kicker">CURRENT OBJECTIVE</span>
+    <span id="objective-text">寻找四段记忆，推开红门</span>
+  </div>
+
+  <div class="controls">
+    <div><b>WASD</b> 移动 &nbsp;·&nbsp; <b>拖动</b> 环顾</div>
+    <div><b>E</b> 触碰 &nbsp;·&nbsp; <b>SHIFT</b> 慢走 &nbsp;·&nbsp; <b>M</b> 静音</div>
+  </div>
+
+  <div class="timecode" id="timecode">REC ● 00:00:00</div>
+</div>
+
+<div id="reticle" aria-hidden="true"></div>
+
+<!-- ===================== PROMPT ===================== -->
+<div class="prompt" id="prompt" role="button" tabindex="0" aria-label="互动">
+  <kbd>E</kbd>
+  <span id="prompt-text">触碰</span>
+  <span class="prompt-progress" aria-hidden="true"><i id="prompt-progress-bar"></i></span>
+</div>
+
+<!-- ===================== AMBIENCE ===================== -->
+<div class="broadcast" id="broadcast" aria-live="polite">
+  <span class="bc-label">室内广播</span>
+  <span id="broadcast-text"></span>
+</div>
+
+<div class="caption" id="caption" aria-live="polite"></div>
+
+<div class="toast" id="toast" aria-live="polite">
+  <span class="t-label">MEMORY RECOVERED</span>
+  <span class="t-main" id="toast-main"></span>
+</div>
+
+<!-- ===================== DIALOG ===================== -->
+<div class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-kicker">
+  <div class="dialog-meta">
+    <span id="dialog-kicker">泳池 / 03:17</span>
+    <span class="count" id="dialog-count">01 / 04</span>
+  </div>
+  <p id="dialog-text"></p>
+  <div class="dialog-choices" id="dialog-choices" role="group" aria-label="做出选择"></div>
+  <div class="dialog-next" id="dialog-next">
+    <span>按 E / 点击继续</span>
+    <span class="caret" aria-hidden="true"></span>
+  </div>
+</div>
+
+<!-- ===================== TOUCH ===================== -->
+<div id="touch-ui" aria-hidden="true">
+  <div class="joystick" id="joystick">
+    <div class="joystick-knob" id="joystick-knob"></div>
+  </div>
+  <button class="touch-act" id="touch-act" type="button">触碰</button>
+</div>
+
+<!-- ===================== TITLE ===================== -->
+<div class="screen title-screen" id="title-screen">
+  <div class="screen-top">
+    <div class="l">
+      <span>LIMINAL RECORD / 017</span>
+      <span><em>室内泳池 · 闭馆后</em></span>
+    </div>
+    <div class="r">
+      <span>03:17 AM</span>
+      <span>空无一人 / 水温 31.7°C</span>
+    </div>
+  </div>
+
+  <div class="title-center">
+    <div class="title-kicker">THE POOL DREAMS BACK</div>
+    <h1 aria-label="无人泳池"><span class="cn">无</span><span class="cn">人</span><span class="cn">泳</span><span class="cn">池</span></h1>
+    <div class="title-en">NO ONE / NO SURFACE / NO EXIT</div>
+    <div class="title-copy">
+      凌晨三点十七分。<br>
+      <span>你站在池边，水面上没有你的倒影。</span>
+    </div>
+  </div>
+
+  <div class="title-bottom">
+    <div class="start-wrap">
+      <button class="enter-btn" id="start-button" type="button">
+        <span class="idx">01</span>
+        <span class="label">进入泳池</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </button>
+      <div class="note" style="margin-top:12px">建议佩戴耳机 · 约 5 分钟 · 请不要回头</div>
+    </div>
+    <div class="title-notes">
+      <div class="note"><b>DRAG</b><span>拖动环顾</span></div>
+      <div class="note"><b>WASD</b><span>移动 / 慢走</span></div>
+      <div class="note"><b>E</b><span>触碰事物</span></div>
+      <div class="note"><b>M</b><span>静音</span></div>
+    </div>
+  </div>
+
+  <div class="title-side">DEEP END · 2.2M · 请勿奔跑</div>
+</div>
+
+<!-- ===================== ENDING ===================== -->
+<div class="screen ending-screen is-hidden" id="ending-screen" role="dialog" aria-modal="true" aria-labelledby="ending-title" aria-hidden="true">
+  <div class="ending-inner">
+    <div class="ending-kicker" id="ending-kicker">END OF RECORD / 03:17</div>
+    <h2 id="ending-title">你仍在水中</h2>
+    <div class="ending-en" id="ending-en">THE POOL DREAMS OF YOU</div>
+    <p class="ending-copy" id="ending-copy">
+      广播没有响起。灯也没有熄灭。<br>
+      水面上漂着一件泳衣，标签上写着明天的日期。<br>
+      <span style="color:rgba(233,232,219,.3)">你想起自己为什么会在这里了。</span>
+    </p>
+    <div class="ending-meta" id="ending-meta">
+      <span>记忆碎片 4 / 4</span>
+      <span>下潜深度 ∞</span>
+      <span>出口 未找到</span>
+    </div>
+    <button class="again-btn" id="again-button" type="button">再次睁眼</button>
+  </div>
+</div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
