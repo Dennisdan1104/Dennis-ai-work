@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07110f">
+  <meta name="description" content="蜘蛛侠 — 由 Gemini 4 Argon 程序化生成的角色模型。">
+  <title>蜘蛛侠 / SPIDER-MAN — Dennis / AI Work</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307110f'/%3E%3Cpath d='M18 44 32 16l14 28z' fill='none' stroke='%23b44743' stroke-width='2'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --paper: #efeee2;
+      --dim: rgba(239, 238, 226, .5);
+      --faint: rgba(239, 238, 226, .26);
+      --line: rgba(239, 238, 226, .13);
+      --red: #b44743;
+      --teal: #8cc8b8;
+      --serif: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+      --sans: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+      --mono: "Cascadia Mono", "SFMono-Regular", "Consolas", monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #07110f;
+      color: var(--paper);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(55% 45% at 50% 0%, rgba(140, 200, 184, .09), transparent 70%),
+        linear-gradient(180deg, #0a1713, #050c0a 85%);
+      z-index: -1;
+    }
+    .shell {
+      width: min(1080px, calc(100% - 56px));
+      margin: 0 auto;
+      padding: 30px 0 34px;
+    }
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .bar a { color: var(--dim); text-decoration: none; }
+    .bar a::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      margin-right: 9px;
+      border: 1px solid var(--red);
+      transform: rotate(45deg);
+      vertical-align: middle;
+    }
+    .bar .credit { margin-left: auto; color: rgba(180, 71, 67, .62); }
+    header.hero { padding: 64px 0 30px; }
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .34em;
+      color: var(--dim);
+      margin-bottom: 20px;
+    }
+    .kicker::before { content: ""; width: 34px; height: 1px; background: var(--red); }
+    h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(46px, 8vw, 96px);
+      line-height: 1.05;
+      letter-spacing: .04em;
+    }
+    h1 .dot { color: var(--red); }
+    .intro {
+      max-width: 560px;
+      margin-top: 22px;
+      font-family: var(--serif);
+      font-size: 14px;
+      line-height: 2.05;
+      letter-spacing: .1em;
+      color: var(--dim);
+    }
+    figure {
+      margin-top: 40px;
+      border: 1px solid var(--line);
+      background: #0a1512;
+    }
+    figure img { display: block; width: 100%; height: auto; }
+    figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .18em;
+      color: var(--faint);
+      border-top: 1px solid var(--line);
+    }
+    .specs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 34px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .specs div {
+      background: #07110f;
+      padding: 18px 16px;
+    }
+    .specs b {
+      display: block;
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 18px;
+      letter-spacing: .02em;
+    }
+    .specs span {
+      display: block;
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 7px;
+      letter-spacing: .2em;
+      color: var(--faint);
+    }
+    h2 {
+      margin-top: 54px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    ul.files { list-style: none; }
+    ul.files li {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      padding: 15px 4px;
+      border-bottom: 1px solid var(--line);
+    }
+    ul.files a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--paper);
+      text-decoration: none;
+      letter-spacing: .04em;
+    }
+    ul.files a:hover { color: var(--teal); }
+    ul.files .meta {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .16em;
+      color: var(--faint);
+      text-align: right;
+    }
+    .note {
+      margin-top: 30px;
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 2;
+      letter-spacing: .1em;
+      color: var(--faint);
+    }
+    footer {
+      margin-top: 56px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(239, 238, 226, .07);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .18em;
+      color: var(--faint);
+    }
+    footer a { color: var(--dim); text-decoration: none; }
+    footer a:hover { color: var(--teal); }
+    @media (max-width: 760px) {
+      .shell { width: calc(100% - 36px); }
+      header.hero { padding: 44px 0 24px; }
+      .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      ul.files li { flex-wrap: wrap; gap: 8px; }
+      ul.files .meta { margin-left: 0; width: 100%; text-align: left; }
+      h1 { font-size: clamp(38px, 12vw, 60px); }
+      .intro { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="bar">
+      <a href="../">DENNIS / AI WORK</a>
+      <span>003 / SPIDER-MAN</span>
+      <span class="credit">GEMINI 4 ARGON</span>
+    </nav>
+
+    <header class="hero">
+      <p class="kicker">PROCEDURAL CHARACTER</p>
+      <h1>蜘蛛侠<span class="dot">.</span></h1>
+      <p class="intro">
+        一个由脚本长出来的蜘蛛侠。没有雕刻、没有贴图、没有导入模型——<br>
+        躯干、四肢、头颈、镜片与蛛丝发射器，都是 Blender 里一行行代码构建的。
+      </p>
+    </header>
+
+    <figure>
+      <img src="./spiderman_preview_full.png" alt="蜘蛛侠角色模型预览" loading="lazy">
+      <figcaption>
+        <span>FULL BODY / 1.73 m</span>
+        <span>GEMINI 4 ARGON</span>
+      </figcaption>
+    </figure>
+
+    <section class="specs" aria-label="模型规格">
+      <div><b>97,044</b><span>TRIANGLES</span></div>
+      <div><b>12</b><span>MESHES</span></div>
+      <div><b>7</b><span>PBR MATERIALS</span></div>
+      <div><b>0</b><span>TEXTURES</span></div>
+    </section>
+
+    <h2>Files</h2>
+    <ul class="files">
+      <li>
+        <a href="./spiderman.glb" download>spiderman.glb</a>
+        <span class="meta">GLB · 1.7 MB · WEB / REAL-TIME</span>
+      </li>
+      <li>
+        <a href="./spiderman.fbx" download>spiderman.fbx</a>
+        <span class="meta">FBX · 1.7 MB · UNITY / UNREAL / MAYA</span>
+      </li>
+      <li>
+        <a href="./spiderman.blend" download>spiderman.blend</a>
+        <span class="meta">BLENDER 5.2 · 1.3 MB</span>
+      </li>
+      <li>
+        <a href="./build_spiderman.py" download>build_spiderman.py</a>
+        <span class="meta">PYTHON · 生成脚本</span>
+      </li>
+      <li>
+        <a href="./spiderman_preview_closeup.png" download>spiderman_preview_closeup.png</a>
+        <span class="meta">PNG · 1.8 MB · 特写</span>
+      </li>
+    </ul>
+
+    <p class="note">
+      模型由 Gemini 4 Argon 生成，建模逻辑全部在 build_spiderman.py 里，可在 Blender 5.2 中重跑复现。
+    </p>
+
+    <footer>
+      <span>© 2026 DENNIS / BUILT WITH AI</span>
+      <a href="../">← 返回作品集</a>
+    </footer>
+  </div>
+</body>
+</html>
